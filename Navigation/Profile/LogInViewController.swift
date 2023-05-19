@@ -83,8 +83,7 @@ class LogInViewController: UIViewController {
     @objc func buttonPressed() {
         
         let vc = ProfileViewController()
-        vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated: true)
+        self.navigationController?.pushViewController(vc, animated: true)
         
     }
 
@@ -103,7 +102,7 @@ class LogInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        tabBarController?.tabBar.isHidden = true
         navigationController?.navigationBar.isHidden = true
         view.backgroundColor = .white
         setupView()

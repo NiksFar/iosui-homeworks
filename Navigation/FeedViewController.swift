@@ -8,7 +8,7 @@ import UIKit
 
 class FeedViewController: UIViewController {
     
-    private let newPostTitle = Post(title: "Latest News")
+    private let newPostTitle = "Latest News"
     
     let stackView: UIStackView = {
         
