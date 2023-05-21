@@ -66,7 +66,6 @@ class ProfileHeaderView: UIView {
     // Обработка нажатия кнопки
     @objc func buttonPressed() {
         statusLabel.text = statusText
-        //print(statusLabel.text ?? "No status")
     }
 
     

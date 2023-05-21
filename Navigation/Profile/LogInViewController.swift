@@ -18,20 +18,34 @@ class LogInViewController: UIViewController {
         return imageView
     }()
     
+    let separateView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .gray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    let stackView: UIStackView = {
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 0
+        stackView.distribution = .fill
+        stackView.layer.masksToBounds = true
+        stackView.layer.cornerRadius = 10
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+        
+    }()
+    
     var loginTF: UITextField = {
         
-        let textField = UITextField()
+        let textField = TextFieldWithPadding()
         textField.layer.borderColor = UIColor.lightGray.cgColor
-        textField.layer.cornerRadius = 10
-        textField.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        textField.layer.borderWidth = 0.5
         textField.placeholder = "E-mail or phone"
-        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: textField.frame.height)) // Добавляем маленькую вьюшку(белый прямоугольник) - для отступа от края textField
-        textField.leftViewMode = .always
         textField.textColor = .black
         textField.font = .systemFont(ofSize: 16)
         textField.backgroundColor = UIColor.systemGray5
-        //textField.tintColor =
         textField.autocapitalizationType = .none
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -40,20 +54,12 @@ class LogInViewController: UIViewController {
     
     var passwordTF: UITextField = {
         
-        let textField = UITextField()
+        let textField = TextFieldWithPadding()
         textField.layer.borderColor = UIColor.lightGray.cgColor
-        textField.layer.cornerRadius = 10
-        textField.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        textField.layer.borderWidth = 0.5
         textField.placeholder = "Password"
-        /////////////////////////////
-        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: textField.frame.height)) // Добавляем маленькую вьюшку(белый прямоугольник) - для отступа от края textField
-        textField.leftViewMode = .always
-        /////////////////////////////
         textField.textColor = .black
         textField.font = .systemFont(ofSize: 16)
         textField.backgroundColor = UIColor.systemGray5
-        //textField.tintColor =
         textField.autocapitalizationType = .none
         textField.isSecureTextEntry = true
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -69,11 +75,10 @@ class LogInViewController: UIViewController {
         
         button.setTitle("Log in", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 10 // Поправить до нужного радиуса
+        button.layer.cornerRadius = 10
         
         button.setBackgroundImage(UIImage(named: "pixelImage"), for: .normal)
         button.layer.masksToBounds = true
-        //button.heightAnchor.constraint(equalToConstant: 50).isActive = true
         button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -108,20 +113,22 @@ class LogInViewController: UIViewController {
         setupView()
         
     }
-    /////////////////////////////
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
             super.touchesBegan(touches, with: event)
-            view.endEditing(true) // Скрывает клавиатуру, вызванную для любого объекта
+            view.endEditing(true) 
         }
-    /////////////////////////////
+    
     private func setupView() {
         
         self.view.addSubview(scrollView)
         self.view.addSubview(contentView)
         self.view.addSubview(logo)
-        self.view.addSubview(loginTF)
-        self.view.addSubview(passwordTF)
+        self.view.addSubview(stackView)
         self.view.addSubview(logInButton)
+        stackView.addArrangedSubview(loginTF)
+        stackView.addArrangedSubview(separateView)
+        stackView.addArrangedSubview(passwordTF)
         self.setupConstraints()
     }
     
@@ -143,17 +150,15 @@ class LogInViewController: UIViewController {
             logo.heightAnchor.constraint(equalToConstant: 100),
             logo.widthAnchor.constraint(equalToConstant: 100),
             
-            loginTF.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 80),
-            loginTF.heightAnchor.constraint(equalToConstant: 50),
-            loginTF.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            loginTF.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            stackView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 80),
+            stackView.heightAnchor.constraint(equalToConstant: 100),
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            passwordTF.topAnchor.constraint(equalTo: loginTF.bottomAnchor, constant: -0.5),
-            passwordTF.heightAnchor.constraint(equalToConstant: 50),
-            passwordTF.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            passwordTF.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            separateView.heightAnchor.constraint(equalToConstant: 0.5),
+            loginTF.heightAnchor.constraint(equalTo: passwordTF.heightAnchor, multiplier: 1),
             
-            logInButton.topAnchor.constraint(equalTo: passwordTF.bottomAnchor, constant: 16),
+            logInButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 16),
             logInButton.heightAnchor.constraint(equalToConstant: 50),
             logInButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             logInButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)

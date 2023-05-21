@@ -5,7 +5,6 @@
 //  Created by Никита on 21.02.2023.
 //
 
-import Foundation
 import UIKit
 
 struct Post {
@@ -16,9 +15,4 @@ struct Post {
     let views: Int
 }
 
-//func choosen() {
-//    let choosenPost = Post(title: "Here is choosen post")
-//    let postViewController = PostViewController()
-//    postViewController.postTitle = choosenPost
-//}
 

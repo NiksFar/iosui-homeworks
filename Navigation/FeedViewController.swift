@@ -30,8 +30,7 @@ class FeedViewController: UIViewController {
         
         return button
     }()
-    
-    ///
+
     private lazy var button2: UIButton = {
         let button = UIButton()
         button.setTitle("Go to post", for: .normal)
@@ -42,7 +41,6 @@ class FeedViewController: UIViewController {
         
         return button
     }()
-    ///
 
     override func viewDidLoad() {
         super.viewDidLoad()
