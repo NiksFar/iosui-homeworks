@@ -9,12 +9,12 @@ import UIKit
 
 final class PostViewController: UIViewController {
     
-    var postTitle: Post? = Post(title: "New Post")
+    var postTitle = "New Post"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = postTitle?.title
+        title = postTitle
         view.backgroundColor = UIColor.cyan
         
         let infoBarButton = UIBarButtonItem(title: "Info", style: .plain, target: self, action: #selector(infoButton))
