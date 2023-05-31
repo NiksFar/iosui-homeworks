@@ -14,49 +14,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-  /*    let feedViewController = FeedViewController()
-        let profileViewController = ProfileViewController()
-        let postViewController = PostViewController()
-        
-        // UINavigationController
-        
-        let feedNavigation = UINavigationController(rootViewController: feedViewController)
-        feedNavigation.tabBarItem = UITabBarItem(title: "Feed", image: UIImage(systemName: "Feed"), selectedImage: UIImage(systemName: "newspaper.circle"))
-        
-        
-        let profileNavigation = UINavigationController(rootViewController: profileViewController)
-        profileNavigation.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "Profile"), selectedImage: UIImage(systemName: "person.crop.circle"))
-        
-        
-        let postNavigation = UINavigationController(rootViewController: profileViewController)
-        postNavigation.tabBarItem = UITabBarItem(title: "Post", image: UIImage(systemName: "Post"), selectedImage: UIImage(systemName: "pencil.circle"))
-        
-        
-        // UITabBarController
-        let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [feedNavigation, profileNavigation, postNavigation]
-        tabBarController.tabBar.backgroundColor = UIColor.green
-   */
-        // UIWindow
-        
         self.window = UIWindow(windowScene: windowScene)
         self.window?.rootViewController = TabBarController()
         self.window?.makeKeyAndVisible()
-        
-        /* let window = UIWindow(windowScene: scene)
-        
-        self.window.rootViewController = TabBarController()
-        
-        self.window = window
-        self.window.makeKeyAndVisible()
-         */
+
     }
     
-    
-    
-    
-    
-//////////
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

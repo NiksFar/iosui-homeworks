@@ -66,7 +66,6 @@ class ProfileHeaderView: UIView {
     // Обработка нажатия кнопки
     @objc func buttonPressed() {
         statusLabel.text = statusText
-        //print(statusLabel.text ?? "No status")
     }
 
     
@@ -102,13 +101,13 @@ class ProfileHeaderView: UIView {
     }
     
     private func setupAddedSubviews() {
-        self.addSubview(carImageView)
+        
         self.addSubview(profileLabel)
         self.addSubview(statusLabel)
         self.addSubview(textField)
         self.addSubview(statusButton)
+        self.addSubview(carImageView)
         self.setupElementConstraints()
-        
         
     }
     

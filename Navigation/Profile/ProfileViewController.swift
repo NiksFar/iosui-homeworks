@@ -11,67 +11,198 @@ class ProfileViewController: UIViewController {
     
     let profileHeaderView = ProfileHeaderView()
     
-    let newButton: UIButton = {
-        
-        let button = UIButton()
-        
-        button.backgroundColor = .green
-        button.setTitle("New Button", for: .normal)
-        button.setTitleColor(.red, for: .normal)
-        button.layer.cornerRadius = 16 // Поправить до нужного радиуса
-        button.layer.masksToBounds = false // Обязательно, если хотим видеть тень
-        button.layer.shadowOffset = CGSize(width: 4, height: 4)
-        button.layer.shadowRadius = 4
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.opacity = 0.7
-        button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+    let posts = DataService.posts
     
+    let tableView = UITableView(frame: .zero, style: .grouped)
+    
+    let substrateView = UIView()
+    
+    let closeButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .clear
+        button.setTitleColor(.black, for: .normal)
+        button.setTitle("✕", for: .normal)
+        button.alpha = 0
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(closeAction), for: .touchUpInside)
         return button
     }()
     
+    @objc func closeAction() {
+        substrateView.alpha = 0
+        closeButton.alpha = 0
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        //print(#function) - Проверка этапов исполнения кода
+        tableView.delegate = self
+        tableView.dataSource = self
+        tabBarController?.tabBar.isHidden = false
         self.view.backgroundColor = .gray
-        self.view.addSubview(profileHeaderView)
-        self.view.addSubview(newButton)
-        
+        self.view.addSubview(tableView)
+        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: "PostCell") // - регистрируем ячейку
+        tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: "PhotoCell")
+        self.tableView.rowHeight = UITableView.automaticDimension
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = true
     }
     
     private func setupView() {
-        print(#function)
-        profileHeaderView.translatesAutoresizingMaskIntoConstraints = false
         profileHeaderView.backgroundColor = .lightGray
-        newButton.translatesAutoresizingMaskIntoConstraints = false
-       
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.backgroundColor = .white
+        prepareView()
         setupConstraints()
-        
-        profileHeaderView.carImageView.layer.cornerRadius = profileHeaderView.carImageView.frame.height/2
-        
+        addTap()
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         self.setupView()
-        
+        profileHeaderView.carImageView.layer.cornerRadius = self.view.frame.width * 0.15
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        //print(#function)
+        //self.view.layoutIfNeeded()
+        profileHeaderView.carImageView.layer.cornerRadius = profileHeaderView.carImageView.frame.height / 2
+        //profileHeaderView.layoutIfNeeded()
     }
     
     private func setupConstraints() {
-        print(profileHeaderView.carImageView.frame.height,"До настройки")
         NSLayoutConstraint.activate([
-        
-            profileHeaderView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            profileHeaderView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 0),
-            profileHeaderView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
-            profileHeaderView.heightAnchor.constraint(equalToConstant: 220),
+            tableView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 0),
+            tableView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
+            tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
             
-            newButton.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 0),
-            newButton.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
-            newButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+            substrateView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 0),
+            substrateView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
+            substrateView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            substrateView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
             
+            closeButton.trailingAnchor.constraint(equalTo: substrateView.trailingAnchor, constant: -16),
+            closeButton.topAnchor.constraint(equalTo: substrateView.topAnchor, constant: 16),
+            closeButton.heightAnchor.constraint(equalToConstant: 25),
+            closeButton.widthAnchor.constraint(equalToConstant: 25)
         ])
-        print(profileHeaderView.carImageView.frame.height,"после настройки")
+        //print("Z", profileHeaderView.carImageView.layer.zPosition)
     }
 
+    private func addTap() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        profileHeaderView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func handleTap(_ gesture: UITapGestureRecognizer) {
+        let location = gesture.location(in: profileHeaderView)
+        let centerXImage = profileHeaderView.carImageView.layer.position.x
+        let centerYImage = profileHeaderView.carImageView.layer.position.y
+        let halfSize = profileHeaderView.carImageView.bounds.size.width / 2
+        if location.x > (centerXImage - halfSize) && location.x < (centerXImage + halfSize)
+            && location.y > (centerYImage - halfSize) && location.y < (centerYImage + halfSize) {
+            print("Start Animation", location)
+            //animateView()
+            launchAnimation()
+        }
+       // print((centerXImage - halfSize), (centerXImage + halfSize), (centerYImage - halfSize),(centerYImage + halfSize))
+       // print(location, profileHeaderView.carImageView.bounds.size)
+        }
+    
+    private func launchAnimation() {
+        
+        let animatedView = profileHeaderView.carImageView
+        //let centerOrigin = animatedView.center
+        animateView()
+        //view.bringSubviewToFront(animatedView)
+        UIView.animate(
+            withDuration: 2,
+                   delay: 0,
+                   options: .curveLinear
+               ) {
+                   animatedView.center = self.view.center
+                   //animatedView.frame.size.width = self.view.frame.width
+                   //animatedView.frame.size.height = self.view.frame.width
+               } completion: { finished in
+                   print("Did finish UIView.animate() example")
+               }
+}
+    
+    func prepareView() {
+        substrateView.backgroundColor = .yellow
+        substrateView.translatesAutoresizingMaskIntoConstraints = false
+        substrateView.alpha = 0
+        self.view.addSubview(substrateView)
+        self.view.addSubview(closeButton)
+    }
+    
+    private func animateView() {
+        substrateView.alpha = 0.5
+        closeButton.alpha = 1
+    }
+    
 }
 
+extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 1 {
+            return posts.count
+        } else {
+            return 1
+        }
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        2
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 1 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell", for: indexPath) as! PostTableViewCell
+            let post = posts[indexPath.row]
+            cell.setData(post: post)
+            return cell
+        } else {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell", for: indexPath) as! PhotosTableViewCell
+            cell.backgroundColor = .systemGray3
+            cell.setData(data: DataService.array)
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            let vc = PhotosViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if section == 0 {
+            return profileHeaderView
+        } else {
+            return UIView()
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return 220
+        } else {
+            return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 1 {
+            return self.view.frame.width + 130
+        } else {
+            let height = ((self.view.frame.width - 48) / 4) + 60
+            return height
+        }
+    }
+}
