@@ -17,6 +17,36 @@ class ProfileViewController: UIViewController {
     
     let substrateView = UIView()
     
+    let animatedView: UIImageView = {
+        
+            let imageView = UIImageView()
+            imageView.image = UIImage(named: "Image1")
+            imageView.clipsToBounds = true // Чтобы изображение не выходило за пределы круга
+            imageView.contentMode = .scaleAspectFill // Ресайз контента под фрейм
+            imageView.layer.borderWidth = 3 // Ширина рамки 3пт
+            imageView.layer.borderColor = UIColor.white.cgColor // Задаем цвет рамки
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            return imageView
+    }()
+    
+    func startConstraints() -> [NSLayoutConstraint] {
+        return [
+        animatedView.topAnchor.constraint(equalTo: substrateView.topAnchor, constant: 16),
+        animatedView.leadingAnchor.constraint(equalTo: substrateView.leadingAnchor, constant: 16),
+        animatedView.widthAnchor.constraint(equalTo: substrateView.widthAnchor, multiplier: 0.3),
+        animatedView.heightAnchor.constraint(equalTo: animatedView.widthAnchor, multiplier: 1)]
+    }
+    
+    func finishConstraints() -> [NSLayoutConstraint] {
+        return [
+            animatedView.leadingAnchor.constraint(equalTo: substrateView.leadingAnchor, constant: 0),
+            animatedView.trailingAnchor.constraint(equalTo: substrateView.trailingAnchor, constant: 0),
+            animatedView.heightAnchor.constraint(equalTo: substrateView.widthAnchor, multiplier: 1),
+            animatedView.centerXAnchor.constraint(equalTo: substrateView.centerXAnchor),
+            animatedView.centerYAnchor.constraint(equalTo: substrateView.centerYAnchor)]
+    }
+    
+    
     let closeButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
@@ -29,8 +59,7 @@ class ProfileViewController: UIViewController {
     }()
     
     @objc func closeAction() {
-        substrateView.alpha = 0
-        closeButton.alpha = 0
+        launchReverseAnimation()
     }
     
     override func viewDidLoad() {
@@ -43,6 +72,7 @@ class ProfileViewController: UIViewController {
         tableView.register(PostTableViewCell.self, forCellReuseIdentifier: "PostCell") // - регистрируем ячейку
         tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: "PhotoCell")
         self.tableView.rowHeight = UITableView.automaticDimension
+         
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -89,7 +119,7 @@ class ProfileViewController: UIViewController {
             closeButton.heightAnchor.constraint(equalToConstant: 25),
             closeButton.widthAnchor.constraint(equalToConstant: 25)
         ])
-        //print("Z", profileHeaderView.carImageView.layer.zPosition)
+        NSLayoutConstraint.activate(startConstraints())
     }
 
     private func addTap() {
@@ -105,43 +135,61 @@ class ProfileViewController: UIViewController {
         if location.x > (centerXImage - halfSize) && location.x < (centerXImage + halfSize)
             && location.y > (centerYImage - halfSize) && location.y < (centerYImage + halfSize) {
             print("Start Animation", location)
-            //animateView()
+
             launchAnimation()
         }
-       // print((centerXImage - halfSize), (centerXImage + halfSize), (centerYImage - halfSize),(centerYImage + halfSize))
-       // print(location, profileHeaderView.carImageView.bounds.size)
+
         }
     
     private func launchAnimation() {
-        
-        let animatedView = profileHeaderView.carImageView
-        //let centerOrigin = animatedView.center
-        animateView()
-        //view.bringSubviewToFront(animatedView)
+
+        let radius = animatedView.frame.height / 2
+        animatedView.layer.cornerRadius = radius
+        animatedView.alpha = 1
         UIView.animate(
-            withDuration: 2,
-                   delay: 0,
-                   options: .curveLinear
-               ) {
-                   animatedView.center = self.view.center
-                   //animatedView.frame.size.width = self.view.frame.width
-                   //animatedView.frame.size.height = self.view.frame.width
-               } completion: { finished in
-                   print("Did finish UIView.animate() example")
-               }
-}
-    
-    func prepareView() {
-        substrateView.backgroundColor = .yellow
-        substrateView.translatesAutoresizingMaskIntoConstraints = false
-        substrateView.alpha = 0
-        self.view.addSubview(substrateView)
-        self.view.addSubview(closeButton)
+            withDuration: 0.5,
+            delay: 0,
+            options: .curveLinear
+        ) {
+            self.substrateView.alpha = 0.5
+            self.animatedView.center = self.view.center
+            self.animatedView.transform = CGAffineTransform(scaleX: 1/0.3, y: 1/0.3)
+            self.animatedView.layer.cornerRadius = 0
+        } completion: { finished in
+            UIView.animate(withDuration: 0.3) {
+                self.closeButton.alpha = 1
+            }
+            
+        }
     }
     
-    private func animateView() {
-        substrateView.alpha = 0.5
-        closeButton.alpha = 1
+    private func launchReverseAnimation() {
+
+        UIView.animate(
+            withDuration: 0.5,
+            delay: 0,
+            options: .curveLinear
+        ) {
+            self.animatedView.center = CGPoint(x: 75, y: 118)
+            self.animatedView.transform = CGAffineTransform(scaleX: 1, y: 1)
+            self.animatedView.layer.cornerRadius = 69
+        } completion: { finished in
+            self.substrateView.alpha = 0
+            self.closeButton.alpha = 0
+            self.animatedView.alpha = 0
+        }
+    }
+    
+    func prepareView() {
+
+        substrateView.backgroundColor = .yellow
+        substrateView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(substrateView)
+        self.view.addSubview(animatedView)
+        self.view.addSubview(closeButton)
+        substrateView.alpha = 0
+        animatedView.alpha = 0
+
     }
     
 }
